@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { getAbsolutePath } from '@/lib/storage';
+import { getAbsolutePath, getBlobUrl } from '@/lib/storage';
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 
@@ -16,6 +16,11 @@ export async function GET(
 
     if (!publication) {
       return new NextResponse('Not found', { status: 404 });
+    }
+
+    const blobUrl = getBlobUrl(publication.pdfPath);
+    if (blobUrl) {
+      return NextResponse.redirect(blobUrl);
     }
 
     const filePath = getAbsolutePath(publication.pdfPath);

@@ -4,6 +4,9 @@ import { savePdf, saveCover, ensureDirectories, estimatePdfPages } from '@/lib/s
 import { generateCover } from '@/lib/generateCover';
 import slugify from 'slugify';
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 export async function GET() {
   try {
     const publications = await db.publication.findMany({

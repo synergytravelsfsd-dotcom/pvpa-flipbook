@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { deleteFile } from '@/lib/storage';
+import { deleteStoredFile } from '@/lib/storage';
 
 export async function DELETE(
   _request: NextRequest,
@@ -20,9 +20,9 @@ export async function DELETE(
     await db.publication.delete({ where: { slug: params.slug } });
 
     // Delete files (best effort)
-    await deleteFile(publication.pdfPath);
+    await deleteStoredFile(publication.pdfPath);
     if (publication.coverPath) {
-      await deleteFile(publication.coverPath);
+      await deleteStoredFile(publication.coverPath);
     }
 
     return NextResponse.json({ success: true });
