@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, X, Check, AlertCircle, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Upload, FileText, X, Check, AlertCircle, Loader2, ExternalLink } from 'lucide-react';
+import { cn, buildShareUrl } from '@/lib/utils';
 import type { Publication } from '@/types';
 
 interface AdminUploadFormProps {
@@ -99,24 +100,24 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 text-left">
           <p className="text-xs font-medium text-gray-500 mb-1">Public URL</p>
           <a
-            href={`/read/${result.slug}`}
+            href={buildShareUrl(result.slug)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-pvpa-teal hover:underline text-sm break-all font-medium"
           >
-            {typeof window !== 'undefined' ? window.location.origin : ''}/read/{result.slug}
+            {buildShareUrl(result.slug)}
           </a>
         </div>
 
         <div className="flex gap-3 justify-center">
-          <a
-            href={`/read/${result.slug}`}
+          <Link
+            href={`/flipbook/${result.slug}`}
             target="_blank"
-            rel="noopener noreferrer"
-            className="px-5 py-2 bg-pvpa-navy text-white rounded-xl hover:bg-pvpa-blue transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-1.5 px-5 py-2 bg-pvpa-navy text-white rounded-xl hover:bg-pvpa-blue transition-colors text-sm font-medium"
           >
+            <ExternalLink size={14} />
             View Flipbook
-          </a>
+          </Link>
           <button
             onClick={reset}
             className="px-5 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm font-medium"

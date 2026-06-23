@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Calendar, FileText, Eye, Trash2, Share2, ExternalLink } from 'lucide-react';
-import { formatDateShort } from '@/lib/utils';
+import { formatDateShort, buildShareUrl } from '@/lib/utils';
 import { useState } from 'react';
 import type { PublicationListItem } from '@/types';
 
@@ -16,10 +16,7 @@ export default function PublicationCard({ publication, onDelete, isAdmin }: Publ
   const [copiedLink, setCopiedLink] = useState(false);
   const [imgError, setImgError] = useState(false);
 
-  const shareUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/read/${publication.slug}`
-      : `/read/${publication.slug}`;
+  const shareUrl = buildShareUrl(publication.slug);
 
   const copyLink = async () => {
     try {
@@ -34,7 +31,7 @@ export default function PublicationCard({ publication, onDelete, isAdmin }: Publ
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-200 group flex flex-col">
       {/* Cover */}
-      <Link href={`/read/${publication.slug}`} className="block relative bg-pvpa-navy overflow-hidden" style={{ aspectRatio: '3/4' }}>
+      <Link href={`/flipbook/${publication.slug}`} className="block relative bg-pvpa-navy overflow-hidden" style={{ aspectRatio: '3/4' }}>
         {!imgError ? (
           <img
             src={`/api/publications/${publication.slug}/cover`}
@@ -79,7 +76,7 @@ export default function PublicationCard({ publication, onDelete, isAdmin }: Publ
 
         <div className="flex gap-1.5 mt-3">
           <Link
-            href={`/read/${publication.slug}`}
+            href={`/flipbook/${publication.slug}`}
             className="flex-1 flex items-center justify-center gap-1 py-1.5 text-xs font-medium text-white bg-pvpa-navy rounded-lg hover:bg-pvpa-blue transition-colors"
           >
             <ExternalLink size={12} />

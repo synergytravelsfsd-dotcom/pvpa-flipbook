@@ -28,17 +28,22 @@ export function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
+export function getAppBaseUrl(): string {
+  if (typeof window !== "undefined") return window.location.origin;
+  const configured = process.env.NEXT_PUBLIC_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+  if (configured) return configured.replace(/\/$/, "");
+  return "http://localhost:3000";
+}
+
+/** Canonical public path for a publication (PVPA site uses /flipbook/) */
+export function getPublicationPath(slug: string): string {
+  return `/flipbook/${slug}`;
+}
+
 export function buildShareUrl(slug: string): string {
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "http://localhost:3000");
-  return `${base}/read/${slug}`;
+  return `${getAppBaseUrl()}${getPublicationPath(slug)}`;
 }
 
 export function getAppUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3000"
-  );
+  return getAppBaseUrl();
 }

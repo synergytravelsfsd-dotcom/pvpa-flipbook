@@ -55,7 +55,8 @@ For production, update `NEXT_PUBLIC_BASE_URL` to your actual domain, e.g.
 |-----|---------|
 | `/` | Public landing page — browse all publications |
 | `/admin` | Upload and manage publications |
-| `/read/[slug]` | Public flipbook viewer for a single publication |
+| `/flipbook/[slug]` | Public flipbook viewer (canonical URL) |
+| `/read/[slug]` | Redirects to `/flipbook/[slug]` |
 | `/api/publications` | `GET` list / `POST` upload |
 | `/api/publications/[slug]` | `GET` metadata / `PATCH` update page count |
 | `/api/publications/[slug]/pdf` | Serve the original PDF |
@@ -89,7 +90,7 @@ For production, update `NEXT_PUBLIC_BASE_URL` to your actual domain, e.g.
 - [x] Copy share link per publication
 - [x] Delete publication (removes DB record + files)
 
-### Public Flipbook Viewer (`/read/[slug]`)
+### Public Flipbook Viewer (`/flipbook/[slug]`)
 - [x] Realistic 3D page-turn flipbook (react-pageflip)
 - [x] Mobile responsive (single-page mode on mobile)
 - [x] Fullscreen toggle (keyboard shortcut: **F**)

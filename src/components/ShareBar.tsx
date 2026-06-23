@@ -40,7 +40,7 @@ const PLATFORMS = [
       </svg>
     ),
     getUrl: (url: string, title: string) =>
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
+      `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,
   },
   {
     name: 'WhatsApp',

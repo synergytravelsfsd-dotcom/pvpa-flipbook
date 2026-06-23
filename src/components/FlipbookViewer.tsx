@@ -10,7 +10,7 @@ import {
   Bookmark, BookmarkCheck, Search, X, Share2, LayoutList, BookOpen,
   RotateCcw,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, buildShareUrl } from '@/lib/utils';
 import type { TocEntry } from '@/types';
 
 // ── PDF.js worker (local file from postinstall, CDN fallback) ────────────────
@@ -128,6 +128,12 @@ export default function FlipbookViewer({ pdfUrl, title, slug, description, publi
 
   // Bookmarks
   const [bookmarks, setBookmarks] = useState<Set<number>>(new Set());
+
+  // Share URL (absolute, canonical /flipbook/ path)
+  const [shareUrl, setShareUrl] = useState('');
+  useEffect(() => {
+    setShareUrl(buildShareUrl(slug));
+  }, [slug]);
 
   const flipRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -338,7 +344,6 @@ export default function FlipbookViewer({ pdfUrl, title, slug, description, publi
   }
 
   // ── Render: viewer ────────────────────────────────────────────────────────
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const isBookmarked = bookmarks.has(currentPage);
 
   return (
@@ -418,7 +423,7 @@ export default function FlipbookViewer({ pdfUrl, title, slug, description, publi
       </div>
 
       {/* ── Share bar ────────────────────────────────────────────────────── */}
-      {showShare && (
+      {showShare && shareUrl && (
         <ShareBar
           url={shareUrl}
           title={title}

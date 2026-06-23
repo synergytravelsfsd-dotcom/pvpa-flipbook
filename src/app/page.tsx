@@ -56,7 +56,7 @@ export default async function HomePage() {
               </Link>
               {publications.length > 0 && (
                 <Link
-                  href={`/read/${publications[0].slug}`}
+                  href={`/flipbook/${publications[0].slug}`}
                   className="rounded-lg border-2 border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                 >
                   Read Latest

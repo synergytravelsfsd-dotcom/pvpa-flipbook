@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/db';
+import { getAppBaseUrl, getPublicationPath } from '@/lib/utils';
 import FlipbookViewer from '@/components/FlipbookViewer';
 
 interface Props {
@@ -29,7 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pub = await getPublication(params.slug);
   if (!pub) return { title: 'Not Found' };
 
-  const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
+  const base = getAppBaseUrl();
+  const publicationPath = getPublicationPath(pub.slug);
   const coverUrl = `${base}/api/publications/${pub.slug}/cover`;
   const publishedTime = new Date(pub.publishedAt).toISOString();
 
@@ -39,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: pub.title,
       description: pub.description ?? `Read ${pub.title} on PVPA Digital Library`,
-      url: `${base}/read/${pub.slug}`,
+      url: `${base}${publicationPath}`,
       siteName: 'PVPA Digital Library',
       images: [
         {
