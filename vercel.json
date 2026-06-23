@@ -2,6 +2,9 @@
   "framework": "nextjs",
   "buildCommand": "bash scripts/vercel-build.sh",
   "installCommand": "npm install",
+  "env": {
+    "NEXT_PUBLIC_BASE_URL": "https://pvpa-digital-flipbook.vercel.app"
+  },
   "functions": {
     "src/app/api/publications/route.ts": {
       "maxDuration": 60,

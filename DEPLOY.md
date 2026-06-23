@@ -31,13 +31,17 @@ This auto-adds:
 
 This auto-adds `BLOB_READ_WRITE_TOKEN`.
 
-### 3. Environment variable
+### 3. Environment variable (automatic — no dashboard step needed)
 
-**Settings** → **Environment Variables**:
+`NEXT_PUBLIC_BASE_URL` is set in **`vercel.json`** and **`.env.production`**:
 
 ```
-NEXT_PUBLIC_BASE_URL = https://pvpa-digital-flipbook.vercel.app
+https://pvpa-digital-flipbook.vercel.app
 ```
+
+Vercel picks this up on every deploy. Optional manual override in dashboard only if you use a custom domain.
+
+To sync via CLI instead: `bash scripts/set-vercel-env.sh`
 
 ### 4. Push latest code & redeploy
 
