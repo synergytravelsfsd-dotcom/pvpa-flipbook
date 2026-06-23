@@ -1,0 +1,5 @@
+# Keep uploads directory in git but ignore contents
+uploads/pdfs/*
+uploads/covers/*
+!uploads/pdfs/.gitkeep
+!uploads/covers/.gitkeep
