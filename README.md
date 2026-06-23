@@ -30,7 +30,7 @@ Create a `.env` file in the project root (copy from `.env.example`):
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `DATABASE_URL` | `file:./data/pvpa.db` | SQLite database path |
-| `NEXT_PUBLIC_BASE_URL` | `https://pvpa-digital-flipbook.vercel.app` | Public URL for OG/share links |
+| `NEXT_PUBLIC_BASE_URL` | `https://pvpa-flipbook.vercel.app` | Public URL for OG/share links |
 
 For production, update `NEXT_PUBLIC_BASE_URL` to your actual domain, e.g.
 `https://library.pvpa.org`.

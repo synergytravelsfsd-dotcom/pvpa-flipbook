@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 export PATH="${HOME}/.nvm/versions/node/v20.19.0/bin:${HOME}/.nvm/versions/node/v18.20.8/bin:${PATH}"
 
-URL="https://pvpa-digital-flipbook.vercel.app"
+URL="https://pvpa-flipbook.vercel.app"
 
 npx vercel@latest whoami || npx vercel@latest login
 npx vercel@latest link --yes --project pvpa-digital-flipbook 2>/dev/null || true

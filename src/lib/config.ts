@@ -1,7 +1,7 @@
 /** App branding and production defaults */
 export const APP_NAME = 'PVPA Digital Flipbook';
 export const APP_TAGLINE = 'Interactive digital publishing for PVPA publications';
-export const PRODUCTION_URL = 'https://pvpa-digital-flipbook.vercel.app';
+export const PRODUCTION_URL = 'https://pvpa-flipbook.vercel.app';
 
 export function getMetadataBaseUrl(): string {
   return (

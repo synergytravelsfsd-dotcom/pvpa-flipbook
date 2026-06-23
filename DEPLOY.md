@@ -1,70 +1,40 @@
 # Vercel deployment — PVPA Digital Flipbook
 
 **App:** PVPA Digital Flipbook  
-**URL:** `https://pvpa-digital-flipbook.vercel.app`  
-**Env var:** `NEXT_PUBLIC_BASE_URL=https://pvpa-digital-flipbook.vercel.app`
+**Live URL:** https://pvpa-flipbook.vercel.app  
+**Env var:** `NEXT_PUBLIC_BASE_URL=https://pvpa-flipbook.vercel.app`
+
+> Do **not** use `pvpa-digital-flipbook.vercel.app` — that domain is not assigned to this project.
 
 ---
 
-## Fix: `DATABASE_URL is not set` (build error)
+## Fix: `404 DEPLOYMENT_NOT_FOUND`
 
-Vercel Postgres uses **`POSTGRES_PRISMA_URL`**, not `DATABASE_URL`.  
-Latest code maps these automatically — **push + redeploy** after connecting storage.
+You opened a URL that has **no deployment**. Use the correct live URL:
 
-### 1. Connect Postgres (required for uploads)
+### https://pvpa-flipbook.vercel.app
 
-1. [vercel.com/dashboard](https://vercel.com/dashboard) → **pvpa-digital-flipbook**
-2. **Storage** tab → **Create Database** → **Postgres** (Neon)
-3. Name: `pvpa-digital-flipbook-db`
-4. **Connect** → select project **pvpa-digital-flipbook**
+| Page | URL |
+|------|-----|
+| Home | https://pvpa-flipbook.vercel.app |
+| Admin | https://pvpa-flipbook.vercel.app/admin |
+| Health | https://pvpa-flipbook.vercel.app/api/health |
 
-This auto-adds:
-- `POSTGRES_PRISMA_URL`
-- `POSTGRES_URL_NON_POOLING`
-- `POSTGRES_URL`
+---
 
-### 2. Connect Blob (required for PDF files)
+## Connect Postgres + Blob (for uploads)
 
-1. **Storage** → **Create Database** → **Blob**
-2. Name: `pvpa-digital-flipbook-blob`
-3. **Connect** to project
+1. Vercel → **pvpa-flipbook** → **Storage** → **Postgres** → Connect  
+2. **Storage** → **Blob** → Connect  
+3. Push latest code → **Redeploy**
 
-This auto-adds `BLOB_READ_WRITE_TOKEN`.
+---
 
-### 3. Environment variable (automatic — no dashboard step needed)
-
-`NEXT_PUBLIC_BASE_URL` is set in **`vercel.json`** and **`.env.production`**:
-
-```
-https://pvpa-digital-flipbook.vercel.app
-```
-
-Vercel picks this up on every deploy. Optional manual override in dashboard only if you use a custom domain.
-
-To sync via CLI instead: `bash scripts/set-vercel-env.sh`
-
-### 4. Push latest code & redeploy
+## Push latest URL fix
 
 ```bash
 cd ~/Projects/pvpa-flipbook
 git push origin main
 ```
 
-Then **Deployments** → **Redeploy**.
-
----
-
-## Verify after deploy
-
-| Check | URL |
-|-------|-----|
-| Health | `/api/health` → `"status":"ready"` |
-| Home | `/` |
-| Admin | `/admin` |
-
----
-
-## Build behavior (latest)
-
-- **Postgres connected** → runs `prisma db push` + full build
-- **Postgres missing** → skips db push, site still builds (setup page works; uploads need redeploy after Postgres)
+Vercel auto-redeploys from GitHub.
