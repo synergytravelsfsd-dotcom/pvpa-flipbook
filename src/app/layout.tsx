@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { APP_NAME, APP_TAGLINE, getMetadataBaseUrl } from '@/lib/config';
 
 export const metadata: Metadata = {
   title: {
-    default: 'PVPA Digital Library',
-    template: '%s | PVPA Digital Library',
+    default: APP_NAME,
+    template: `%s | ${APP_NAME}`,
   },
-  description: 'Browse PVPA publications as interactive digital flipbooks.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'),
+  description: APP_TAGLINE,
+  metadataBase: new URL(getMetadataBaseUrl()),
+  applicationName: APP_NAME,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

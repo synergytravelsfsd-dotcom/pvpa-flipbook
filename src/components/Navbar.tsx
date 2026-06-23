@@ -17,7 +17,7 @@ export default function Navbar({ showAdmin = true, transparent = false }: Navbar
             </div>
             <div className="leading-tight">
               <span className="font-bold text-white text-base tracking-tight">PVPA</span>
-              <span className="text-teal-300 text-sm ml-2 font-light">Digital Library</span>
+              <span className="text-teal-300 text-sm ml-2 font-light">Digital Flipbook</span>
             </div>
           </Link>
 

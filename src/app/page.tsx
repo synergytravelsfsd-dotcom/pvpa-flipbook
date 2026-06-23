@@ -114,7 +114,7 @@ export default async function HomePage() {
       )}
 
       <footer className="border-t border-gray-200 bg-pvpa-navy py-8 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} PVPA Digital Flipbook Publishing System
+        © {new Date().getFullYear()} PVPA Digital Flipbook
       </footer>
     </div>
   );

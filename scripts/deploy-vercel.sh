@@ -9,7 +9,7 @@ echo "==> Vercel login (skip if already logged in)"
 npx vercel@latest whoami || npx vercel@latest login
 
 echo "==> Link project"
-npx vercel@latest link --yes --project pvpa-flipbook
+npx vercel@latest link --yes --project pvpa-digital-flipbook
 
 echo "==> Add Neon Postgres (if not already linked)"
 echo "    If prompted, connect Neon and link DATABASE_URL to this project."
@@ -24,7 +24,7 @@ DEPLOY_URL=$(npx vercel@latest deploy --prod --yes 2>&1 | tee /dev/stderr | grep
 
 if [ -n "${DEPLOY_URL:-}" ]; then
   echo "==> Setting NEXT_PUBLIC_BASE_URL=$DEPLOY_URL"
-  printf '%s' "$DEPLOY_URL" | npx vercel@latest env add NEXT_PUBLIC_BASE_URL production --force 2>/dev/null || true
+  printf '%s' "https://pvpa-digital-flipbook.vercel.app" | npx vercel@latest env add NEXT_PUBLIC_BASE_URL production --force 2>/dev/null || true
   npx vercel@latest deploy --prod --yes
   echo ""
   echo "✓ Live at: $DEPLOY_URL"

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { PRODUCTION_URL } from '@/lib/config';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -29,10 +30,10 @@ export function formatFileSize(bytes: number): string {
 }
 
 export function getAppBaseUrl(): string {
-  if (typeof window !== "undefined") return window.location.origin;
+  if (typeof window !== 'undefined') return window.location.origin;
   const configured = process.env.NEXT_PUBLIC_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL;
-  if (configured) return configured.replace(/\/$/, "");
-  return "http://localhost:3000";
+  if (configured) return configured.replace(/\/$/, '');
+  return process.env.NODE_ENV === 'production' ? PRODUCTION_URL : 'http://localhost:3000';
 }
 
 /** Canonical public path for a publication (PVPA site uses /flipbook/) */

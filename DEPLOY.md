@@ -1,81 +1,66 @@
-# Vercel deployment
+# Vercel deployment — PVPA Digital Flipbook
 
-## Why the first deploy failed
-
-Vercel built commit **`e965f41`**, which uses **SQLite** and local file storage. That cannot work on Vercel serverless.
-
-Use commit **`48730e4`** or newer (includes Postgres schema, Blob storage, and `vercel.json`).
+**App:** PVPA Digital Flipbook  
+**URL:** `https://pvpa-digital-flipbook.vercel.app`  
+**Env var:** `NEXT_PUBLIC_BASE_URL=https://pvpa-digital-flipbook.vercel.app`
 
 ---
 
-## Step 1 — Push latest code
+## Fix: `DATABASE_URL is not set` (build error)
+
+Vercel Postgres uses **`POSTGRES_PRISMA_URL`**, not `DATABASE_URL`.  
+Latest code maps these automatically — **push + redeploy** after connecting storage.
+
+### 1. Connect Postgres (required for uploads)
+
+1. [vercel.com/dashboard](https://vercel.com/dashboard) → **pvpa-digital-flipbook**
+2. **Storage** tab → **Create Database** → **Postgres** (Neon)
+3. Name: `pvpa-digital-flipbook-db`
+4. **Connect** → select project **pvpa-digital-flipbook**
+
+This auto-adds:
+- `POSTGRES_PRISMA_URL`
+- `POSTGRES_URL_NON_POOLING`
+- `POSTGRES_URL`
+
+### 2. Connect Blob (required for PDF files)
+
+1. **Storage** → **Create Database** → **Blob**
+2. Name: `pvpa-digital-flipbook-blob`
+3. **Connect** to project
+
+This auto-adds `BLOB_READ_WRITE_TOKEN`.
+
+### 3. Environment variable
+
+**Settings** → **Environment Variables**:
+
+```
+NEXT_PUBLIC_BASE_URL = https://pvpa-digital-flipbook.vercel.app
+```
+
+### 4. Push latest code & redeploy
 
 ```bash
 cd ~/Projects/pvpa-flipbook
 git push origin main
 ```
 
----
-
-## Step 2 — Add storage in Vercel (required before redeploy)
-
-In [vercel.com/dashboard](https://vercel.com/dashboard) → **pvpa-flipbook** → **Storage**:
-
-### A. Postgres (database)
-1. **Create Database** → **Postgres** (Neon)
-2. Name: `pvpa-flipbook-db`
-3. **Connect** to project `pvpa-flipbook`
-4. This sets `DATABASE_URL` automatically
-
-### B. Blob (PDF uploads)
-1. **Create Database** → **Blob**
-2. Name: `pvpa-flipbook-blob`
-3. **Connect** to project
-4. This sets `BLOB_READ_WRITE_TOKEN` automatically
+Then **Deployments** → **Redeploy**.
 
 ---
 
-## Step 3 — Environment variables
+## Verify after deploy
 
-**Settings** → **Environment Variables**:
-
-| Variable | Value |
-|----------|--------|
-| `NEXT_PUBLIC_BASE_URL` | `https://your-app.vercel.app` (your production URL) |
-
-Apply to **Production**, **Preview**, **Development**.
-
-> Do **not** set `DATABASE_URL` to SQLite. Remove any manual `file:./data/...` value.
+| Check | URL |
+|-------|-----|
+| Health | `/api/health` → `"status":"ready"` |
+| Home | `/` |
+| Admin | `/admin` |
 
 ---
 
-## Step 4 — Redeploy
+## Build behavior (latest)
 
-**Deployments** → latest failed deploy → **⋯** → **Redeploy**
-
-Or push a new commit to trigger a build.
-
----
-
-## Step 5 — Verify
-
-- `https://YOUR-APP.vercel.app/` → 200
-- `https://YOUR-APP.vercel.app/admin` → upload form
-- Upload a PDF → should persist (Blob + Postgres)
-
----
-
-## Build settings (auto from `vercel.json`)
-
-- **Build command:** `bash scripts/vercel-build.sh`
-- **Node.js:** 20.x (recommended in Project Settings)
-
----
-
-## Local development (unchanged)
-
-```bash
-npm install
-npm run db:push   # SQLite
-npm run dev
-```
+- **Postgres connected** → runs `prisma db push` + full build
+- **Postgres missing** → skips db push, site still builds (setup page works; uploads need redeploy after Postgres)
