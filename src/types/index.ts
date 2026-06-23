@@ -35,3 +35,9 @@ export interface SharePlatform {
   color: string;
   getUrl: (url: string, title: string, description?: string) => string;
 }
+
+export interface TocEntry {
+  title: string;
+  pageIndex: number;
+  level: number;
+}

@@ -78,7 +78,7 @@ export default async function HomePage() {
           {[
             { icon: "📖", title: "Interactive Flipbooks", desc: "Realistic page-turning with zoom, fullscreen, and mobile support." },
             { icon: "🔍", title: "Searchable Text", desc: "Full-text search across all pages for quick content discovery." },
-            { icon: "📱", title: "Social Sharing", desc: "One-click sharing to Facebook, LinkedIn, WhatsApp, X, Telegram, and Email." },
+            { icon: "📱", title: "Social Sharing", desc: "One-click sharing to Facebook, LinkedIn, WhatsApp, X, Telegram, Instagram, and Email." },
             { icon: "🖼️", title: "Rich Previews", desc: "Open Graph cards with cover image, title, and description." },
             { icon: "📑", title: "Table of Contents", desc: "Automatic TOC from PDF bookmarks with thumbnail navigation." },
             { icon: "🔖", title: "Bookmarks & Print", desc: "Save favorite pages, download PDF, or print from the viewer." },

@@ -1,6 +1,8 @@
 # PVPA Digital Flipbook Publishing System
 
-A standalone, self-hosted platform that converts PDF publications into interactive online flipbooks — shareable on Facebook, LinkedIn, WhatsApp, X (Twitter), Telegram, Email, and the PVPA website.
+A standalone, self-hosted platform that converts PDF publications into interactive online flipbooks — shareable on Facebook, LinkedIn, WhatsApp, X (Twitter), Telegram, Instagram, Email, and the PVPA website.
+
+**Repository:** https://github.com/synergytravelsfsd-dotcom/pvpa-flipbook
 
 ---
 
@@ -23,7 +25,7 @@ Open **http://localhost:3000** in your browser.
 
 ## Environment Variables
 
-Create a `.env` file in the project root (already provided — edit as needed):
+Create a `.env` file in the project root (copy from `.env.example`):
 
 | Variable | Default | Description |
 |----------|---------|-------------|
@@ -93,7 +95,7 @@ For production, update `NEXT_PUBLIC_BASE_URL` to your actual domain, e.g.
 - [x] Fullscreen toggle (keyboard shortcut: **F**)
 - [x] Zoom in/out (50% – 200%, 25% steps)
 - [x] Text search across all pages (keyboard shortcut: **Ctrl/⌘+F**)
-- [x] Thumbnail sidebar with page preview
+- [x] Thumbnail navigation and PDF bookmark table of contents
 - [x] Page bookmarking (persisted in `localStorage`)
 - [x] Keyboard navigation (← / → arrow keys)
 - [x] Download original PDF
@@ -102,7 +104,7 @@ For production, update `NEXT_PUBLIC_BASE_URL` to your actual domain, e.g.
 
 ### Social Sharing
 - [x] OG / Twitter Card meta tags (cover, title, date, description)
-- [x] Share bar: Facebook, LinkedIn, X (Twitter), WhatsApp, Telegram
+- [x] Share bar: Facebook, LinkedIn, X (Twitter), WhatsApp, Telegram, Instagram (copy link)
 - [x] Share via Email (mailto)
 - [x] Copy link with clipboard feedback
 

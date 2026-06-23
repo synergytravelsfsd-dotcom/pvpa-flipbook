@@ -11,10 +11,45 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { TocEntry } from '@/types';
 
-// ── PDF.js worker ────────────────────────────────────────────────────────────
+// ── PDF.js worker (local file from postinstall, CDN fallback) ────────────────
 if (typeof window !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+  fetch('/pdf.worker.min.mjs', { method: 'HEAD' })
+    .then(res => {
+      if (!res.ok) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+      }
+    })
+    .catch(() => {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+    });
+}
+
+async function extractToc(doc: pdfjsLib.PDFDocumentProxy): Promise<TocEntry[]> {
+  const outline = await doc.getOutline();
+  if (!outline?.length) return [];
+
+  async function walk(items: NonNullable<Awaited<ReturnType<typeof doc.getOutline>>>, level = 0): Promise<TocEntry[]> {
+    const entries: TocEntry[] = [];
+    for (const item of items) {
+      let pageIndex = 0;
+      try {
+        if (item.dest) {
+          const dest = typeof item.dest === 'string' ? await doc.getDestination(item.dest) : item.dest;
+          if (dest?.[0]) pageIndex = await doc.getPageIndex(dest[0]);
+        }
+      } catch {
+        pageIndex = 0;
+      }
+      entries.push({ title: item.title, pageIndex, level });
+      if (item.items?.length) entries.push(...(await walk(item.items, level + 1)));
+    }
+    return entries;
+  }
+
+  return walk(outline);
 }
 
 // ── Page component (must support forwardRef for react-pageflip) ───────────────
@@ -72,6 +107,7 @@ export default function FlipbookViewer({ pdfUrl, title, slug, description, publi
   // Pages
   const [pages, setPages] = useState<string[]>([]);
   const [pageTexts, setPageTexts] = useState<string[]>([]);
+  const [toc, setToc] = useState<TocEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -141,6 +177,7 @@ export default function FlipbookViewer({ pdfUrl, title, slug, description, publi
 
         const count = doc.numPages;
         setTotalPages(count);
+        setToc(await extractToc(doc));
 
         const imgs: string[] = [];
         const texts: string[] = [];
@@ -396,6 +433,7 @@ export default function FlipbookViewer({ pdfUrl, title, slug, description, publi
         {showSidebar && pages.length > 0 && (
           <ThumbnailSidebar
             pages={pages}
+            toc={toc}
             currentPage={currentPage}
             bookmarks={bookmarks}
             searchResults={searchResults}
