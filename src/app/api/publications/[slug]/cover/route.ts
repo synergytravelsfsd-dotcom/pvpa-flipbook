@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDbReady } from '@/lib/db';
 import { getAbsolutePath, getBlobUrl } from '@/lib/storage';
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   try {
+    await ensureDbReady();
     const publication = await db.publication.findUnique({
       where: { slug: params.slug },
       select: { coverPath: true },

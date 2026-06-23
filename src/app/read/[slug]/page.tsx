@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { db } from '@/lib/db';
+import { db, ensureDbReady } from '@/lib/db';
 import { APP_NAME, getMetadataBaseUrl } from '@/lib/config';
 import { getPublicationPath } from '@/lib/utils';
 import FlipbookViewer from '@/components/FlipbookViewer';
@@ -9,7 +9,11 @@ interface Props {
   params: { slug: string };
 }
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 async function getPublication(slug: string) {
+  await ensureDbReady();
   try {
     return await db.publication.findUnique({
       where: { slug },

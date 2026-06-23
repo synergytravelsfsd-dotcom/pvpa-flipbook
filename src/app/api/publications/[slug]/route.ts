@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, ensureDbReady } from '@/lib/db';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
   try {
+    await ensureDbReady();
     const publication = await db.publication.findUnique({
       where: { slug: params.slug },
     });
@@ -25,6 +29,7 @@ export async function PATCH(
   { params }: { params: { slug: string } }
 ) {
   try {
+    await ensureDbReady();
     const body = await request.json();
     const { pages } = body as { pages?: number };
     if (typeof pages !== 'number') {

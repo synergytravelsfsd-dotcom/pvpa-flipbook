@@ -14,7 +14,12 @@ export default function AdminPage() {
     try {
       const res = await fetch("/api/publications");
       const data = await res.json();
-      setPublications(data);
+      if (!res.ok || data.error) {
+        console.error("Failed to load publications:", data.error);
+        setPublications([]);
+        return;
+      }
+      setPublications(Array.isArray(data) ? data : []);
     } catch {
       /* ignore */
     } finally {

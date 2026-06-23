@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { db } from "@/lib/db";
+import { db, ensureDbReady } from "@/lib/db";
 import Navbar from "@/components/Navbar";
 import PublicationCard from "@/components/PublicationCard";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 async function getRecentPublications() {
-  try {
-    return await db.publication.findMany({
+  await ensureDbReady();
+  return await db.publication.findMany({
       orderBy: { publishedAt: "desc" },
       take: 6,
       select: {
@@ -21,9 +22,6 @@ async function getRecentPublications() {
         createdAt: true,
       },
     });
-  } catch {
-    return [];
-  }
 }
 
 export default async function HomePage() {
@@ -92,7 +90,22 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {publications.length > 0 && (
+      {publications.length === 0 ? (
+        <section className="bg-white py-16 border-t border-gray-200">
+          <div className="mx-auto max-w-xl px-4 text-center">
+            <h3 className="text-2xl font-bold text-gray-900">No publications yet</h3>
+            <p className="mt-3 text-gray-600">
+              Upload your first PDF from the admin panel. It will appear here automatically.
+            </p>
+            <Link
+              href="/admin"
+              className="inline-block mt-6 rounded-lg bg-pvpa-navy px-6 py-3 text-sm font-semibold text-white hover:bg-pvpa-blue transition-colors"
+            >
+              Upload Your First Publication
+            </Link>
+          </div>
+        </section>
+      ) : (
         <section className="bg-white py-20 border-t border-gray-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h3 className="text-3xl font-bold text-gray-900">Recent Publications</h3>

@@ -12,6 +12,11 @@ interface AdminUploadFormProps {
 
 type Status = 'idle' | 'uploading' | 'success' | 'error';
 
+function useBlobUpload(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1');
+}
+
 export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [title, setTitle] = useState('');
@@ -19,10 +24,12 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
   const [publishedAt, setPublishedAt] = useState(() => new Date().toISOString().split('T')[0]);
   const [isDragging, setIsDragging] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
+  const [uploadStep, setUploadStep] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [result, setResult] = useState<Publication | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const blobUpload = useBlobUpload();
 
   const setFileAndTitle = useCallback(
     (f: File) => {
@@ -57,17 +64,48 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
 
     setStatus('uploading');
     setErrorMsg('');
-
-    const formData = new FormData();
-    formData.append('pdf', file);
-    formData.append('title', title.trim());
-    formData.append('description', description.trim());
-    formData.append('publishedAt', publishedAt);
+    setUploadStep('');
 
     try {
-      const res = await fetch('/api/publications', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      let data: Publication;
+
+      if (blobUpload) {
+        setUploadStep('Uploading PDF to cloud storage…');
+        const { upload } = await import('@vercel/blob/client');
+        const blob = await upload(file.name, file, {
+          access: 'public',
+          handleUploadUrl: '/api/blob/upload',
+        });
+
+        setUploadStep('Saving publication…');
+        const res = await fetch('/api/publications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: title.trim(),
+            description: description.trim() || null,
+            publishedAt,
+            pdfUrl: blob.url,
+            fileSize: file.size,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error((json as { error?: string }).error || 'Failed to save publication');
+        data = json as Publication;
+      } else {
+        setUploadStep('Uploading…');
+        const formData = new FormData();
+        formData.append('pdf', file);
+        formData.append('title', title.trim());
+        formData.append('description', description.trim());
+        formData.append('publishedAt', publishedAt);
+
+        const res = await fetch('/api/publications', { method: 'POST', body: formData });
+        const json = await res.json();
+        if (!res.ok) throw new Error((json as { error?: string }).error || 'Upload failed');
+        data = json as Publication;
+      }
+
       setResult(data);
       setStatus('success');
       onSuccess?.(data);
@@ -75,6 +113,8 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
       const msg = err instanceof Error ? err.message : 'Upload failed';
       setErrorMsg(msg);
       setStatus('error');
+    } finally {
+      setUploadStep('');
     }
   };
 
@@ -133,7 +173,6 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
     <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-5">
       <h2 className="text-base font-semibold text-gray-900">Upload New Publication</h2>
 
-      {/* Drop zone */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -174,12 +213,11 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
           <>
             <Upload size={28} className="mx-auto mb-2 text-gray-400" />
             <p className="text-sm font-medium text-gray-600">Drop PDF here or click to browse</p>
-            <p className="text-xs text-gray-400 mt-0.5">PDF files only</p>
+            <p className="text-xs text-gray-400 mt-0.5">PDF files up to 100 MB</p>
           </>
         )}
       </div>
 
-      {/* Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Title <span className="text-red-500">*</span>
@@ -194,7 +232,6 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
         />
       </div>
 
-      {/* Description */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
         <textarea
@@ -206,7 +243,6 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
         />
       </div>
 
-      {/* Date */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Publication Date</label>
         <input
@@ -217,15 +253,16 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
         />
       </div>
 
-      {/* Error */}
       {status === 'error' && (
         <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
           <AlertCircle size={16} className="mt-0.5 shrink-0" />
-          {errorMsg}
+          <div>
+            <p className="font-medium">Upload failed</p>
+            <p className="mt-1">{errorMsg}</p>
+          </div>
         </div>
       )}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={!file || !title.trim() || status === 'uploading'}
@@ -239,7 +276,7 @@ export default function AdminUploadForm({ onSuccess }: AdminUploadFormProps) {
         {status === 'uploading' ? (
           <span className="inline-flex items-center justify-center gap-2">
             <Loader2 size={16} className="animate-spin" />
-            Publishing…
+            {uploadStep || 'Publishing…'}
           </span>
         ) : (
           'Publish Flipbook'

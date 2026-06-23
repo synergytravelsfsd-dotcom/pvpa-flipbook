@@ -12,7 +12,7 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate && node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js && (test -n \"$VERCEL\" && cp prisma/schema.postgresql.prisma prisma/schema.prisma && prisma generate || prisma generate)"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
